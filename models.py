@@ -111,9 +111,17 @@ class Song(db.Model):
     )
 
     @classmethod
-    def read_by_index(cls, db_sess: Session, index: int) -> Optional[Song]:
+    def read_by_index(cls, index: int) -> Optional[Song]:
         filter_cond = cls.index == index
         query = select(cls).where(filter_cond)
 
-        result = db_sess.execute(query).scalar_one_or_none()
+        result = db.session.execute(query).scalar_one_or_none()
+        return result
+
+    @classmethod
+    def read_paginated(cls, page_size: int, page_no: int) -> list[Song]:
+        query = select(cls)
+        query = query.offset((page_no - 1) * page_size).limit(page_size)
+
+        result = db.session.execute(query).scalars()
         return result

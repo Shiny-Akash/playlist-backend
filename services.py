@@ -2,6 +2,7 @@ import json
 
 from models import Song
 from extensions import db
+from utils import convert_model_to_dict
 
 
 def init_songs_tbl():
@@ -11,7 +12,7 @@ def init_songs_tbl():
     songs = []
     for idx in data["id"].keys():
         # Check if this entry already exists in DB
-        song = Song.read_by_index(db.session, idx)
+        song = Song.read_by_index(idx)
         if song is not None:
             continue
 
@@ -43,3 +44,10 @@ def init_songs_tbl():
 
     db.session.add_all(songs)
     db.session.commit()
+
+
+def read_songs(page_size: int, page_no: int) -> list[Song]:
+    songs = Song.read_paginated(page_size, page_no)
+    songs = [convert_model_to_dict(song) for song in songs]
+
+    return songs
