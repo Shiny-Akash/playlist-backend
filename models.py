@@ -28,6 +28,7 @@ class Song(db.Model):
     title = Column(
         "title",
         VARCHAR(255),
+        unique=True,
     )
 
     danceability = Column(
@@ -113,6 +114,14 @@ class Song(db.Model):
     @classmethod
     def read_by_index(cls, index: int) -> Optional[Song]:
         filter_cond = cls.index == index
+        query = select(cls).where(filter_cond)
+
+        result = db.session.execute(query).scalar_one_or_none()
+        return result
+
+    @classmethod
+    def read_by_title(cls, title: str) -> Optional[Song]:
+        filter_cond = cls.title == title
         query = select(cls).where(filter_cond)
 
         result = db.session.execute(query).scalar_one_or_none()

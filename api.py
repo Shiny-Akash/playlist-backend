@@ -5,6 +5,7 @@ from flask import jsonify
 from flask import request
 
 from services import read_songs
+from services import read_song
 
 
 bp = Blueprint(__name__, "apis")
@@ -32,6 +33,31 @@ def api_read_songs():
         "message": "Songs read successfully",
         "code": "songs.read.success",
         "data": songs
+    }
+    response = jsonify(result)
+    response.status = HTTPStatus.OK
+    return response
+
+
+@bp.get("/song", strict_slashes=False)
+def api_read_song():
+    song_title = request.args.get("title", '')
+
+    song = read_song(song_title)
+
+    if song is None:
+        result = {
+            "message": "Song not found with the given title",
+            "code": "song.read.not_found",
+        }
+        response = jsonify(result)
+        response.status = HTTPStatus.NOT_FOUND
+        return response
+
+    result = {
+        "message": "Song read successfully",
+        "code": "song.read.success",
+        "data": song
     }
     response = jsonify(result)
     response.status = HTTPStatus.OK

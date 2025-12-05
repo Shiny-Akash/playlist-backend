@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from models import Song
 from extensions import db
@@ -51,3 +52,11 @@ def read_songs(page_size: int, page_no: int) -> list[Song]:
     songs = [convert_model_to_dict(song) for song in songs]
 
     return songs
+
+
+def read_song(song_title: str) -> Optional[Song]:
+    song = Song.read_by_title(song_title)
+    if song is None:
+        return None
+
+    return convert_model_to_dict(song)
